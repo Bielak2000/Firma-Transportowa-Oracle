@@ -1,0 +1,431 @@
+--------------------------------------------------------
+--  File created - czwartek-maja-27-2021   
+--------------------------------------------------------
+DROP TABLE "UCZELNIA"."GRUPYZAJECIOWE" cascade constraints;
+DROP TABLE "UCZELNIA"."OCENY" cascade constraints;
+DROP TABLE "UCZELNIA"."PRACOWNICY" cascade constraints;
+DROP TABLE "UCZELNIA"."PRZEDMIOTY" cascade constraints;
+DROP TABLE "UCZELNIA"."STUDENCI" cascade constraints;
+DROP TABLE "UCZELNIA"."ZAJECIA" cascade constraints;
+DROP VIEW "UCZELNIA"."KTO_JAKI_PRZEMIOT_PROWADZI";
+DROP VIEW "UCZELNIA"."KTO_NIE_PROWADZI_ZAJECIA";
+DROP VIEW "UCZELNIA"."KTO_PROWADZI_ZAJECIA";
+DROP VIEW "UCZELNIA"."OCENA_OD_KOGO_DLA_KOGO";
+DROP VIEW "UCZELNIA"."RANKING_STUDENTOW_I_GRUP";
+DROP VIEW "UCZELNIA"."SREDNIA_OCEN_Z_DANYCH_PRZEDMIOTOW";
+DROP PROCEDURE "UCZELNIA"."NAJLEPSI_STUDENCI";
+DROP PROCEDURE "UCZELNIA"."SREDNIA_STUDENTA_NA_TLE_RESZTY";
+DROP PROCEDURE "UCZELNIA"."WYSWIETLENIE_STUDENTOW_Z_DANEJ_GRUPY1";
+--------------------------------------------------------
+--  DDL for Table GRUPYZAJECIOWE
+--------------------------------------------------------
+
+  CREATE TABLE "UCZELNIA"."GRUPYZAJECIOWE" 
+   (	"NUMER_GRUPY" NUMBER
+   ) SEGMENT CREATION IMMEDIATE 
+  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "USERS" ;
+--------------------------------------------------------
+--  DDL for Table OCENY
+--------------------------------------------------------
+
+  CREATE TABLE "UCZELNIA"."OCENY" 
+   (	"OCENA" NUMBER, 
+	"NR_ALBUMU_STUDENTA" VARCHAR2(20 BYTE), 
+	"ID_PROWADZACEGO" VARCHAR2(20 BYTE), 
+	"ID_OCENY" VARCHAR2(1000 BYTE), 
+	"ID_PRZEDMIOTU" VARCHAR2(20 BYTE)
+   ) SEGMENT CREATION IMMEDIATE 
+  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "USERS" ;
+  GRANT ALTER ON "UCZELNIA"."OCENY" TO "C##PRACOWNIK";
+  GRANT DELETE ON "UCZELNIA"."OCENY" TO "C##PRACOWNIK";
+  GRANT INDEX ON "UCZELNIA"."OCENY" TO "C##PRACOWNIK";
+  GRANT INSERT ON "UCZELNIA"."OCENY" TO "C##PRACOWNIK";
+  GRANT SELECT ON "UCZELNIA"."OCENY" TO "C##PRACOWNIK";
+  GRANT UPDATE ON "UCZELNIA"."OCENY" TO "C##PRACOWNIK";
+  GRANT REFERENCES ON "UCZELNIA"."OCENY" TO "C##PRACOWNIK";
+  GRANT READ ON "UCZELNIA"."OCENY" TO "C##PRACOWNIK";
+  GRANT ON COMMIT REFRESH ON "UCZELNIA"."OCENY" TO "C##PRACOWNIK";
+  GRANT QUERY REWRITE ON "UCZELNIA"."OCENY" TO "C##PRACOWNIK";
+  GRANT DEBUG ON "UCZELNIA"."OCENY" TO "C##PRACOWNIK";
+  GRANT FLASHBACK ON "UCZELNIA"."OCENY" TO "C##PRACOWNIK";
+--------------------------------------------------------
+--  DDL for Table PRACOWNICY
+--------------------------------------------------------
+
+  CREATE TABLE "UCZELNIA"."PRACOWNICY" 
+   (	"ID_PRACOWNIKA" VARCHAR2(20 BYTE), 
+	"IMIE" VARCHAR2(20 BYTE), 
+	"NAZWISKO" VARCHAR2(20 BYTE)
+   ) SEGMENT CREATION IMMEDIATE 
+  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "USERS" ;
+--------------------------------------------------------
+--  DDL for Table PRZEDMIOTY
+--------------------------------------------------------
+
+  CREATE TABLE "UCZELNIA"."PRZEDMIOTY" 
+   (	"ID_PRZEDMIOTU" VARCHAR2(20 BYTE), 
+	"NAZWA_PRZEDMIOTU" VARCHAR2(50 BYTE)
+   ) SEGMENT CREATION IMMEDIATE 
+  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "USERS" ;
+--------------------------------------------------------
+--  DDL for Table STUDENCI
+--------------------------------------------------------
+
+  CREATE TABLE "UCZELNIA"."STUDENCI" 
+   (	"NR_ALBUMU" VARCHAR2(20 BYTE), 
+	"IMIE" VARCHAR2(20 BYTE), 
+	"NAZWISKO" VARCHAR2(20 BYTE), 
+	"GR_ZAJECIOWA" NUMBER
+   ) SEGMENT CREATION IMMEDIATE 
+  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "USERS" ;
+--------------------------------------------------------
+--  DDL for Table ZAJECIA
+--------------------------------------------------------
+
+  CREATE TABLE "UCZELNIA"."ZAJECIA" 
+   (	"PRZEDMIOT" VARCHAR2(50 BYTE), 
+	"PROWADZACY" VARCHAR2(50 BYTE), 
+	"ID_ZAJEC" VARCHAR2(1000 BYTE), 
+	"DATA" DATE, 
+	"GRUPA_ZAJECIOWA" NUMBER
+   ) SEGMENT CREATION IMMEDIATE 
+  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "USERS" ;
+--------------------------------------------------------
+--  DDL for View KTO_JAKI_PRZEMIOT_PROWADZI
+--------------------------------------------------------
+
+  CREATE OR REPLACE FORCE NONEDITIONABLE VIEW "UCZELNIA"."KTO_JAKI_PRZEMIOT_PROWADZI" ("NAZWISKO", "IMIE", "NAZWA_PRZEDMIOTU") AS 
+  with
+cte1 as (select imie, nazwisko, id_pracownika from pracownicy), 
+cte2 as (select prowadzacy, przedmiot from zajecia),
+cte3 as (select id_przedmiotu, nazwa_przedmiotu from przedmioty)
+select nazwisko,imie, nazwa_przedmiotu from 
+cte1 inner join cte2 on cte1.id_pracownika=cte2.prowadzacy
+inner join cte3 on cte3.id_przedmiotu=cte2.przedmiot
+order by nazwisko
+;
+--------------------------------------------------------
+--  DDL for View KTO_NIE_PROWADZI_ZAJECIA
+--------------------------------------------------------
+
+  CREATE OR REPLACE FORCE NONEDITIONABLE VIEW "UCZELNIA"."KTO_NIE_PROWADZI_ZAJECIA" ("IMIE", "NAZWISKO", "ID_PRACOWNIKA") AS 
+  select imie, nazwisko, id_pracownika from pracownicy where id_pracownika IN
+(select id_pracownika from pracownicy minus select prowadzacy from zajecia)
+order by nazwisko, imie
+;
+--------------------------------------------------------
+--  DDL for View KTO_PROWADZI_ZAJECIA
+--------------------------------------------------------
+
+  CREATE OR REPLACE FORCE NONEDITIONABLE VIEW "UCZELNIA"."KTO_PROWADZI_ZAJECIA" ("ID_PRACOWNIKA", "IMIE", "NAZWISKO") AS 
+  select "ID_PRACOWNIKA","IMIE","NAZWISKO" from pracownicy where id_pracownika in
+(select id_pracownika from pracownicy
+intersect
+select prowadzacy from zajecia)
+;
+--------------------------------------------------------
+--  DDL for View OCENA_OD_KOGO_DLA_KOGO
+--------------------------------------------------------
+
+  CREATE OR REPLACE FORCE NONEDITIONABLE VIEW "UCZELNIA"."OCENA_OD_KOGO_DLA_KOGO" ("IMIE_STUDENTA", "NAZWISKO_STUDENTA", "ID_OCENA", "WARTOSC", "IMIE_PRACOWNIKA", "NAZWISKO_PRACOWNIKA") AS 
+  WITH ocena_od_kogo_dla_kogo as
+    (
+        Select 
+            st.IMIE Imie_studenta
+            , st.NAZWISKO nazwisko_studenta
+            , oc.ID_OCENY ID_Ocena
+            , oc.OCENA wartosc
+            , pr.IMIE imie_pracownika
+            , pr.NAZWISKO nazwisko_pracownika 
+        from OCENY oc
+        left outer join STUDENCI st
+            on oc.NR_ALBUMU_STUDENTA = st.NR_ALBUMU
+        left outer join PRACOWNICY pr
+            on oc.ID_PROWADZACEGO = pr.ID_PRACOWNIKA
+        order by ID_Ocena
+    )
+select "IMIE_STUDENTA","NAZWISKO_STUDENTA","ID_OCENA","WARTOSC","IMIE_PRACOWNIKA","NAZWISKO_PRACOWNIKA" from ocena_od_kogo_dla_kogo order by nazwisko_studenta, imie_studenta
+;
+--------------------------------------------------------
+--  DDL for View RANKING_STUDENTOW_I_GRUP
+--------------------------------------------------------
+
+  CREATE OR REPLACE FORCE NONEDITIONABLE VIEW "UCZELNIA"."RANKING_STUDENTOW_I_GRUP" ("NAZWISKO", "GR_ZAJECIOWA", "SREDNIA", "RANK") AS 
+  select studenci.nazwisko,studenci.gr_zajeciowa, avg(oceny.ocena) as srednia,rank() over (order by avg(oceny.ocena) DESC) as rank 
+from oceny left join studenci on studenci.nr_albumu=oceny.nr_albumu_studenta group by studenci.gr_zajeciowa,
+cube(studenci.nazwisko) order by rank, studenci.gr_zajeciowa
+;
+--------------------------------------------------------
+--  DDL for View SREDNIA_OCEN_Z_DANYCH_PRZEDMIOTOW
+--------------------------------------------------------
+
+  CREATE OR REPLACE FORCE NONEDITIONABLE VIEW "UCZELNIA"."SREDNIA_OCEN_Z_DANYCH_PRZEDMIOTOW" ("ANALIZA_SREDNIA", "ALGEBRA_SREDNIA", "BAZY_DANYCH_SREDNIA", "PODSTAWY_PROGRAMOWANIE_SREDNIA", "PODSTAWY_PROGRAMOWANIE_OBIEKTOWE_SREDNIA") AS 
+  select "ANALIZA_SREDNIA","ALGEBRA_SREDNIA","BAZY_DANYCH_SREDNIA","PODSTAWY_PROGRAMOWANIE_SREDNIA","PODSTAWY_PROGRAMOWANIE_OBIEKTOWE_SREDNIA" from (select id_przedmiotu, ocena from oceny) pivot(avg(ocena) AS SREDNIA for id_przedmiotu IN (1 as 
+ANALIZA,2 AS ALGEBRA,3 AS BAZY_DANYCH,4 AS PODSTAWY_PROGRAMOWANIE,5 AS 
+PODSTAWY_PROGRAMOWANIE_OBIEKTOWE))
+;
+REM INSERTING into UCZELNIA.GRUPYZAJECIOWE
+SET DEFINE OFF;
+Insert into UCZELNIA.GRUPYZAJECIOWE (NUMER_GRUPY) values ('1');
+Insert into UCZELNIA.GRUPYZAJECIOWE (NUMER_GRUPY) values ('2');
+Insert into UCZELNIA.GRUPYZAJECIOWE (NUMER_GRUPY) values ('3');
+Insert into UCZELNIA.GRUPYZAJECIOWE (NUMER_GRUPY) values ('4');
+REM INSERTING into UCZELNIA.OCENY
+SET DEFINE OFF;
+Insert into UCZELNIA.OCENY (OCENA,NR_ALBUMU_STUDENTA,ID_PROWADZACEGO,ID_OCENY,ID_PRZEDMIOTU) values ('5','400225','2','1','2');
+Insert into UCZELNIA.OCENY (OCENA,NR_ALBUMU_STUDENTA,ID_PROWADZACEGO,ID_OCENY,ID_PRZEDMIOTU) values ('3','400227','1','4','4');
+Insert into UCZELNIA.OCENY (OCENA,NR_ALBUMU_STUDENTA,ID_PROWADZACEGO,ID_OCENY,ID_PRZEDMIOTU) values ('5','400228','2','5','1');
+Insert into UCZELNIA.OCENY (OCENA,NR_ALBUMU_STUDENTA,ID_PROWADZACEGO,ID_OCENY,ID_PRZEDMIOTU) values ('2','400228','1','6','5');
+Insert into UCZELNIA.OCENY (OCENA,NR_ALBUMU_STUDENTA,ID_PROWADZACEGO,ID_OCENY,ID_PRZEDMIOTU) values ('3','232323','1','7','2');
+Insert into UCZELNIA.OCENY (OCENA,NR_ALBUMU_STUDENTA,ID_PROWADZACEGO,ID_OCENY,ID_PRZEDMIOTU) values ('3','233343','1','8','2');
+Insert into UCZELNIA.OCENY (OCENA,NR_ALBUMU_STUDENTA,ID_PROWADZACEGO,ID_OCENY,ID_PRZEDMIOTU) values ('3','400222','1','9','2');
+Insert into UCZELNIA.OCENY (OCENA,NR_ALBUMU_STUDENTA,ID_PROWADZACEGO,ID_OCENY,ID_PRZEDMIOTU) values ('3','400221','1','10','2');
+Insert into UCZELNIA.OCENY (OCENA,NR_ALBUMU_STUDENTA,ID_PROWADZACEGO,ID_OCENY,ID_PRZEDMIOTU) values ('3','400223','1','11','2');
+Insert into UCZELNIA.OCENY (OCENA,NR_ALBUMU_STUDENTA,ID_PROWADZACEGO,ID_OCENY,ID_PRZEDMIOTU) values ('3','400225','1','12','2');
+Insert into UCZELNIA.OCENY (OCENA,NR_ALBUMU_STUDENTA,ID_PROWADZACEGO,ID_OCENY,ID_PRZEDMIOTU) values ('3','400227','1','13','2');
+Insert into UCZELNIA.OCENY (OCENA,NR_ALBUMU_STUDENTA,ID_PROWADZACEGO,ID_OCENY,ID_PRZEDMIOTU) values ('3','400228','1','14','2');
+Insert into UCZELNIA.OCENY (OCENA,NR_ALBUMU_STUDENTA,ID_PROWADZACEGO,ID_OCENY,ID_PRZEDMIOTU) values ('3','400229','1','15','2');
+Insert into UCZELNIA.OCENY (OCENA,NR_ALBUMU_STUDENTA,ID_PROWADZACEGO,ID_OCENY,ID_PRZEDMIOTU) values ('2','400228','1','22','5');
+Insert into UCZELNIA.OCENY (OCENA,NR_ALBUMU_STUDENTA,ID_PROWADZACEGO,ID_OCENY,ID_PRZEDMIOTU) values ('3','40031','1','18','2');
+Insert into UCZELNIA.OCENY (OCENA,NR_ALBUMU_STUDENTA,ID_PROWADZACEGO,ID_OCENY,ID_PRZEDMIOTU) values ('3','40032','1','19','2');
+Insert into UCZELNIA.OCENY (OCENA,NR_ALBUMU_STUDENTA,ID_PROWADZACEGO,ID_OCENY,ID_PRZEDMIOTU) values ('3','40033','1','20','2');
+Insert into UCZELNIA.OCENY (OCENA,NR_ALBUMU_STUDENTA,ID_PROWADZACEGO,ID_OCENY,ID_PRZEDMIOTU) values ('3','40034','1','21','2');
+Insert into UCZELNIA.OCENY (OCENA,NR_ALBUMU_STUDENTA,ID_PROWADZACEGO,ID_OCENY,ID_PRZEDMIOTU) values ('2','40034','1','2','1');
+Insert into UCZELNIA.OCENY (OCENA,NR_ALBUMU_STUDENTA,ID_PROWADZACEGO,ID_OCENY,ID_PRZEDMIOTU) values ('3','40031','3','3','2');
+REM INSERTING into UCZELNIA.PRACOWNICY
+SET DEFINE OFF;
+Insert into UCZELNIA.PRACOWNICY (ID_PRACOWNIKA,IMIE,NAZWISKO) values ('9','Lola','Ksykiweicz');
+Insert into UCZELNIA.PRACOWNICY (ID_PRACOWNIKA,IMIE,NAZWISKO) values ('8','Kamil','Koks');
+Insert into UCZELNIA.PRACOWNICY (ID_PRACOWNIKA,IMIE,NAZWISKO) values ('1','Kacper','Bielak');
+Insert into UCZELNIA.PRACOWNICY (ID_PRACOWNIKA,IMIE,NAZWISKO) values ('2','Ivan','Buk');
+Insert into UCZELNIA.PRACOWNICY (ID_PRACOWNIKA,IMIE,NAZWISKO) values ('3','Kacper','Basaj');
+Insert into UCZELNIA.PRACOWNICY (ID_PRACOWNIKA,IMIE,NAZWISKO) values ('4','Wlodzimierz','Wilk');
+Insert into UCZELNIA.PRACOWNICY (ID_PRACOWNIKA,IMIE,NAZWISKO) values ('5','Stanislaw','Kostrzewa');
+Insert into UCZELNIA.PRACOWNICY (ID_PRACOWNIKA,IMIE,NAZWISKO) values ('6','Rafal','Brzozowski');
+Insert into UCZELNIA.PRACOWNICY (ID_PRACOWNIKA,IMIE,NAZWISKO) values ('7','Krzysztof','Brzozowski');
+REM INSERTING into UCZELNIA.PRZEDMIOTY
+SET DEFINE OFF;
+Insert into UCZELNIA.PRZEDMIOTY (ID_PRZEDMIOTU,NAZWA_PRZEDMIOTU) values ('1','Analiza');
+Insert into UCZELNIA.PRZEDMIOTY (ID_PRZEDMIOTU,NAZWA_PRZEDMIOTU) values ('2','Algebra');
+Insert into UCZELNIA.PRZEDMIOTY (ID_PRZEDMIOTU,NAZWA_PRZEDMIOTU) values ('3','Bazy danych');
+Insert into UCZELNIA.PRZEDMIOTY (ID_PRZEDMIOTU,NAZWA_PRZEDMIOTU) values ('4','Podstawy Programowania');
+Insert into UCZELNIA.PRZEDMIOTY (ID_PRZEDMIOTU,NAZWA_PRZEDMIOTU) values ('5','Podstawy Programowania Obiektowego');
+REM INSERTING into UCZELNIA.STUDENCI
+SET DEFINE OFF;
+Insert into UCZELNIA.STUDENCI (NR_ALBUMU,IMIE,NAZWISKO,GR_ZAJECIOWA) values ('400000','Kacper','Czader','3');
+Insert into UCZELNIA.STUDENCI (NR_ALBUMU,IMIE,NAZWISKO,GR_ZAJECIOWA) values ('232323','Zofia','Gaz','1');
+Insert into UCZELNIA.STUDENCI (NR_ALBUMU,IMIE,NAZWISKO,GR_ZAJECIOWA) values ('233343','Krystian','Buk','1');
+Insert into UCZELNIA.STUDENCI (NR_ALBUMU,IMIE,NAZWISKO,GR_ZAJECIOWA) values ('400222','Jan','Kowalski','1');
+Insert into UCZELNIA.STUDENCI (NR_ALBUMU,IMIE,NAZWISKO,GR_ZAJECIOWA) values ('400221','Bogdan','Siemczyk','2');
+Insert into UCZELNIA.STUDENCI (NR_ALBUMU,IMIE,NAZWISKO,GR_ZAJECIOWA) values ('400223','Jakub','Kowal','3');
+Insert into UCZELNIA.STUDENCI (NR_ALBUMU,IMIE,NAZWISKO,GR_ZAJECIOWA) values ('400225','Jacek','Gil','3');
+Insert into UCZELNIA.STUDENCI (NR_ALBUMU,IMIE,NAZWISKO,GR_ZAJECIOWA) values ('400227','Bartosz','Gijon','4');
+Insert into UCZELNIA.STUDENCI (NR_ALBUMU,IMIE,NAZWISKO,GR_ZAJECIOWA) values ('400228','Kacper','Skiba','4');
+Insert into UCZELNIA.STUDENCI (NR_ALBUMU,IMIE,NAZWISKO,GR_ZAJECIOWA) values ('400229','Kajetan','Skiba','4');
+Insert into UCZELNIA.STUDENCI (NR_ALBUMU,IMIE,NAZWISKO,GR_ZAJECIOWA) values ('40020','Kajetan','Kotula','3');
+Insert into UCZELNIA.STUDENCI (NR_ALBUMU,IMIE,NAZWISKO,GR_ZAJECIOWA) values ('40030','Kajetan','Mitura','1');
+Insert into UCZELNIA.STUDENCI (NR_ALBUMU,IMIE,NAZWISKO,GR_ZAJECIOWA) values ('40031','Krzysztof','Malek','3');
+Insert into UCZELNIA.STUDENCI (NR_ALBUMU,IMIE,NAZWISKO,GR_ZAJECIOWA) values ('40032','Krzysztof','Mis','4');
+Insert into UCZELNIA.STUDENCI (NR_ALBUMU,IMIE,NAZWISKO,GR_ZAJECIOWA) values ('40033','Artur','Mis','3');
+Insert into UCZELNIA.STUDENCI (NR_ALBUMU,IMIE,NAZWISKO,GR_ZAJECIOWA) values ('40034','Artur','Kopernik','4');
+REM INSERTING into UCZELNIA.ZAJECIA
+SET DEFINE OFF;
+Insert into UCZELNIA.ZAJECIA (PRZEDMIOT,PROWADZACY,ID_ZAJEC,DATA,GRUPA_ZAJECIOWA) values ('5','1','1',to_date('16/10/08','RR/MM/DD'),'2');
+Insert into UCZELNIA.ZAJECIA (PRZEDMIOT,PROWADZACY,ID_ZAJEC,DATA,GRUPA_ZAJECIOWA) values ('3','2','2',to_date('16/10/09','RR/MM/DD'),'4');
+Insert into UCZELNIA.ZAJECIA (PRZEDMIOT,PROWADZACY,ID_ZAJEC,DATA,GRUPA_ZAJECIOWA) values ('1','3','3',to_date('16/10/10','RR/MM/DD'),'2');
+Insert into UCZELNIA.ZAJECIA (PRZEDMIOT,PROWADZACY,ID_ZAJEC,DATA,GRUPA_ZAJECIOWA) values ('3','1','4',to_date('16/10/11','RR/MM/DD'),'1');
+Insert into UCZELNIA.ZAJECIA (PRZEDMIOT,PROWADZACY,ID_ZAJEC,DATA,GRUPA_ZAJECIOWA) values ('4','3','5',to_date('16/10/12','RR/MM/DD'),'3');
+Insert into UCZELNIA.ZAJECIA (PRZEDMIOT,PROWADZACY,ID_ZAJEC,DATA,GRUPA_ZAJECIOWA) values ('2','3','6',to_date('16/10/13','RR/MM/DD'),'3');
+Insert into UCZELNIA.ZAJECIA (PRZEDMIOT,PROWADZACY,ID_ZAJEC,DATA,GRUPA_ZAJECIOWA) values ('1','2','7',to_date('16/10/13','RR/MM/DD'),'1');
+Insert into UCZELNIA.ZAJECIA (PRZEDMIOT,PROWADZACY,ID_ZAJEC,DATA,GRUPA_ZAJECIOWA) values ('3','3','8',to_date('16/10/14','RR/MM/DD'),'2');
+Insert into UCZELNIA.ZAJECIA (PRZEDMIOT,PROWADZACY,ID_ZAJEC,DATA,GRUPA_ZAJECIOWA) values ('1','1','9',to_date('16/10/20','RR/MM/DD'),'1');
+Insert into UCZELNIA.ZAJECIA (PRZEDMIOT,PROWADZACY,ID_ZAJEC,DATA,GRUPA_ZAJECIOWA) values ('1','1','10',to_date('16/10/21','RR/MM/DD'),'1');
+--------------------------------------------------------
+--  DDL for Trigger PILNOWANIE_OCEN
+--------------------------------------------------------
+
+  CREATE OR REPLACE NONEDITIONABLE TRIGGER "UCZELNIA"."PILNOWANIE_OCEN" 
+BEFORE update of ocena on oceny
+for each row  WHEN (new.ocena < old.ocena ) BEGIN
+    dbms_output.put_line('Nie mozna wstawic nizszej oceny!');
+    :new.ocena:=:old.ocena;
+END dodanie_studenci;
+/
+ALTER TRIGGER "UCZELNIA"."PILNOWANIE_OCEN" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger ZAGROZENIE
+--------------------------------------------------------
+
+  CREATE OR REPLACE NONEDITIONABLE TRIGGER "UCZELNIA"."ZAGROZENIE" 
+AFTER insert on oceny
+for each row  WHEN (new.ocena < 3 ) BEGIN
+    dbms_output.put_line('Student musi poprawic ocene!');
+END zagrozenie;
+/
+ALTER TRIGGER "UCZELNIA"."ZAGROZENIE" ENABLE;
+--------------------------------------------------------
+--  DDL for Procedure NAJLEPSI_STUDENCI
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE NONEDITIONABLE PROCEDURE "UCZELNIA"."NAJLEPSI_STUDENCI" 
+( liczba IN number )
+as
+c1 sys_refcursor;
+BEGIN
+open c1 for
+    select * from ranking_studentow_i_grup where nazwisko is not null fetch first liczba rows only;
+    dbms_sql.return_result(c1);
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure SREDNIA_STUDENTA_NA_TLE_RESZTY
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE NONEDITIONABLE PROCEDURE "UCZELNIA"."SREDNIA_STUDENTA_NA_TLE_RESZTY" 
+( naz IN varchar2 )
+as
+c1 sys_refcursor;
+BEGIN
+open c1 for
+    select studenci.nazwisko, avg(oceny.ocena)
+    from oceny left join studenci on studenci.nr_albumu=oceny.nr_albumu_studenta 
+    group by rollup(studenci.nazwisko) having studenci.nazwisko like naz or studenci.nazwisko is null;
+dbms_sql.return_result(c1);
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure WYSWIETLENIE_STUDENTOW_Z_DANEJ_GRUPY1
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE NONEDITIONABLE PROCEDURE "UCZELNIA"."WYSWIETLENIE_STUDENTOW_Z_DANEJ_GRUPY1" 
+( liczba IN number )
+as
+c1 sys_refcursor;
+BEGIN
+open c1 for
+    select imie, nazwisko, nr_albumu from studenci where gr_zajeciowa=(select numer_grupy from grupyzajeciowe offset liczba-1 rows fetch next 1 rows only);
+    dbms_sql.return_result(c1);
+END;
+
+/
+--------------------------------------------------------
+--  Constraints for Table OCENY
+--------------------------------------------------------
+
+  ALTER TABLE "UCZELNIA"."OCENY" ADD PRIMARY KEY ("ID_OCENY")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "USERS"  ENABLE;
+--------------------------------------------------------
+--  Constraints for Table PRZEDMIOTY
+--------------------------------------------------------
+
+  ALTER TABLE "UCZELNIA"."PRZEDMIOTY" ADD PRIMARY KEY ("ID_PRZEDMIOTU")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "USERS"  ENABLE;
+--------------------------------------------------------
+--  Constraints for Table PRACOWNICY
+--------------------------------------------------------
+
+  ALTER TABLE "UCZELNIA"."PRACOWNICY" ADD PRIMARY KEY ("ID_PRACOWNIKA")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "USERS"  ENABLE;
+--------------------------------------------------------
+--  Constraints for Table STUDENCI
+--------------------------------------------------------
+
+  ALTER TABLE "UCZELNIA"."STUDENCI" ADD PRIMARY KEY ("NR_ALBUMU")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "USERS"  ENABLE;
+--------------------------------------------------------
+--  Constraints for Table GRUPYZAJECIOWE
+--------------------------------------------------------
+
+  ALTER TABLE "UCZELNIA"."GRUPYZAJECIOWE" ADD PRIMARY KEY ("NUMER_GRUPY")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "USERS"  ENABLE;
+--------------------------------------------------------
+--  Constraints for Table ZAJECIA
+--------------------------------------------------------
+
+  ALTER TABLE "UCZELNIA"."ZAJECIA" ADD PRIMARY KEY ("ID_ZAJEC")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "USERS"  ENABLE;
+--------------------------------------------------------
+--  Ref Constraints for Table OCENY
+--------------------------------------------------------
+
+  ALTER TABLE "UCZELNIA"."OCENY" ADD CONSTRAINT "KLUCZ_OBCY2" FOREIGN KEY ("NR_ALBUMU_STUDENTA")
+	  REFERENCES "UCZELNIA"."STUDENCI" ("NR_ALBUMU") ENABLE;
+  ALTER TABLE "UCZELNIA"."OCENY" ADD CONSTRAINT "KLUCZ_OBCY3" FOREIGN KEY ("ID_PROWADZACEGO")
+	  REFERENCES "UCZELNIA"."PRACOWNICY" ("ID_PRACOWNIKA") ENABLE;
+  ALTER TABLE "UCZELNIA"."OCENY" ADD CONSTRAINT "KLUCZ_OBCY4" FOREIGN KEY ("ID_PRZEDMIOTU")
+	  REFERENCES "UCZELNIA"."PRZEDMIOTY" ("ID_PRZEDMIOTU") ENABLE;
+--------------------------------------------------------
+--  Ref Constraints for Table STUDENCI
+--------------------------------------------------------
+
+  ALTER TABLE "UCZELNIA"."STUDENCI" ADD CONSTRAINT "KLUCZ_OBCY1" FOREIGN KEY ("GR_ZAJECIOWA")
+	  REFERENCES "UCZELNIA"."GRUPYZAJECIOWE" ("NUMER_GRUPY") ENABLE;
+--------------------------------------------------------
+--  Ref Constraints for Table ZAJECIA
+--------------------------------------------------------
+
+  ALTER TABLE "UCZELNIA"."ZAJECIA" ADD CONSTRAINT "KLUCZ_OBCY5" FOREIGN KEY ("GRUPA_ZAJECIOWA")
+	  REFERENCES "UCZELNIA"."GRUPYZAJECIOWE" ("NUMER_GRUPY") ENABLE;
+  ALTER TABLE "UCZELNIA"."ZAJECIA" ADD CONSTRAINT "KLUCZ_OBCY6" FOREIGN KEY ("PRZEDMIOT")
+	  REFERENCES "UCZELNIA"."PRZEDMIOTY" ("ID_PRZEDMIOTU") ENABLE;
+  ALTER TABLE "UCZELNIA"."ZAJECIA" ADD CONSTRAINT "KLUCZ_OBCY7" FOREIGN KEY ("PROWADZACY")
+	  REFERENCES "UCZELNIA"."PRACOWNICY" ("ID_PRACOWNIKA") ENABLE;
