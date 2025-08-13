@@ -1,3 +1,2 @@
-# Firma-Transportowa-Oracle
-Baza danych Oracle napisana w języku SQL wraz z CRUD-em w języku python.
-Służy do zarządzania uczelnią - wirtualny dziekanat.
+# Transport company database with CRUD
+An Oracle database written in SQL with CRUD in Python. It is used to manage the university's virtual dean's office.
